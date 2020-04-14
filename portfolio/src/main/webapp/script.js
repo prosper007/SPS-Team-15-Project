@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-async function getRequests(){
-  const response = await fetch('/requests');
-  const bookRequests = await response.json();
-  const contentElement = document.getElementById("content");
-  bookRequests.forEach((bookRequest) => {
-    contentElement.appendChild(createRequestElement(bookRequest));
-  });
-}
-
 function createRequestElement(bookRequest) {
   
   const titleElement = document.createElement('div');
@@ -38,13 +29,39 @@ function createRequestElement(bookRequest) {
   const statusElement = document.createElement('div');
   statusElement.innerText = "Status: " + bookRequest.status;
 
-  const requestElement = document.createElement('div');
-  requestElement.classList.add('book-request');
-  requestElement.appendChild(titleElement);
-  requestElement.appendChild(authorElement);
-  requestElement.appendChild(isbnElement);
-  requestElement.appendChild(returnDateElement);
-  requestElement.appendChild(statusElement);
+  const container = document.createElement('div');
+  container.classList.add('book-request');
+  container.appendChild(titleElement);
+  container.appendChild(authorElement);
+  container.appendChild(isbnElement);
+  container.appendChild(returnDateElement);
+  container.appendChild(statusElement);
 
+  const requestElement = document.createElement('a');
+  requestElement.href = `/view-request/${bookRequest.bookRequestKey}`;
+  requestElement.appendChild(container);
   return requestElement;
+}
+
+async function getRequests(){
+  const response = await fetch('/requests');
+  const bookRequests = await response.json();
+  const contentElement = document.getElementById("content");
+  bookRequests.forEach((bookRequest) => {
+    contentElement.appendChild(createRequestElement(bookRequest));
+  });
+}
+
+async function getRequest(){
+  const path = window.location.pathname.split('/');
+  //request key should be last part of url
+  requestKey = path[path.length-1];
+  const response = await fetch(`/request/${requestKey}`);
+  if(response.status != 200){
+    window.location.replace("/request-not-found");
+    return;
+  }
+  const bookRequest = await response.json();
+  const contentElement = document.getElementById("content");
+  contentElement.appendChild(createRequestElement(bookRequest));
 }
