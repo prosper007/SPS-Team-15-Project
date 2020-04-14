@@ -27,6 +27,8 @@ import java.text.ParseException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 @WebServlet("/make-request")
 public class CreateRequestServlet extends HttpServlet {
@@ -39,6 +41,11 @@ public class CreateRequestServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();
+    // if(!userService.isUserLoggedIn()){
+
+    // }
+
     long timestamp = System.currentTimeMillis();
     String title = request.getParameter("title");
     String author = request.getParameter("author");
@@ -49,7 +56,7 @@ public class CreateRequestServlet extends HttpServlet {
     try {  
       returnDate = sdf.parse(dateString);
     } catch (ParseException e) {
-      // e.printStackTrace();
+      e.printStackTrace();
     }
     
     if(isStringValid(title)) {      

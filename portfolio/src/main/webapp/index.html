@@ -6,12 +6,17 @@
     <link rel="stylesheet" href="/style.css">
     <script src="/script.js"></script>
   </head>
-  <body onload="getRequests()">
+  <body onload="getRequests(); getLoginStatus()">
     <div id="root-div">
       <nav id="navbar">
         <a id="nav-brand" href="/">Our Site</a>
         <span id="nav-group">
-          <a class="nav-link" href="/make-request">Request a book</a>
+          <div id="logged-in-container">
+            <!--Link hrefs are inserted dynamically from getLoginStatus() in script.js -->
+            <a id="make-request-link" class="nav-link">Request a book</a>
+            <a id="logout-link" class="nav-link">Logout</a>
+          </div>  
+          <a id="login-link" class="nav-link">Please login to request a book</a>
         </span>
       </nav>
       <div id="content">

@@ -23,3 +23,10 @@
   flex-direction: column;
   margin-bottom: 2em;
 }
+#logged-in-container {
+  display: none;
+  justify-content: space-around;
+}
+.nav-link {
+  margin-right: 1.5em;
+}

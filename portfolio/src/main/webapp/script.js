@@ -43,6 +43,26 @@ function createRequestElement(bookRequest) {
   return requestElement;
 }
 
+async function getLoginStatus() {
+  const response = await fetch('/login-status');
+  const authInfo = await response.json();
+  console.log(authInfo);
+  const loginLink = document.getElementById('login-link');
+  
+  if(!authInfo.isUserLoggedIn){
+    loginLink.href = authInfo.loginUrl;
+    return;
+  }
+
+  const makeRequestLink = document.getElementById('make-request-link');
+  makeRequestLink.href = 'make-request';
+  const logoutLink = document.getElementById('logout-link');
+  logoutLink.href = authInfo.logoutUrl;
+  const loggedInContainer = document.getElementById('logged-in-container');
+  loggedInContainer.style.display = 'flex';
+  loginLink.style.display = 'none';
+}
+
 async function getRequests(){
   const response = await fetch('/requests');
   const bookRequests = await response.json();
