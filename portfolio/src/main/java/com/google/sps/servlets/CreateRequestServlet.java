@@ -35,6 +35,12 @@ public class CreateRequestServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    UserService userService = UserServiceFactory.getUserService();
+    if(!userService.isUserLoggedIn()){
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      response.sendRedirect("/");
+      return;
+    }
     RequestDispatcher view = request.getRequestDispatcher("/make-request.html");
     view.forward(request, response);
   }
@@ -42,9 +48,12 @@ public class CreateRequestServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
-    // if(!userService.isUserLoggedIn()){
-
-    // }
+    
+    if(!userService.isUserLoggedIn()){
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      response.sendRedirect("/");
+      return;
+    }
 
     long timestamp = System.currentTimeMillis();
     String title = request.getParameter("title");
@@ -69,6 +78,16 @@ public class CreateRequestServlet extends HttpServlet {
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
       datastore.put(bookEntity);
+      // update user info
+      String id = userService.getCurrentUser().getUserId();
+      String nickname = userService.getCurrentUser().getNickname();
+      String email = userService.getCurrentUser().getEmail();
+      
+      Entity userEntity = new Entity("User", id);
+      userEntity.setProperty("nickname", nickname);
+      userEntity.setProperty("email", email);
+
+      datastore.put(userEntity);
 
       Entity requestEntity = new Entity("Request");
       final String UNFULFILLED = "UNFULFILLED";
@@ -76,6 +95,7 @@ public class CreateRequestServlet extends HttpServlet {
       requestEntity.setProperty("book", bookEntity.getKey());
       requestEntity.setProperty("returnDate", returnDate);
       requestEntity.setProperty("status", UNFULFILLED);
+      requestEntity.setProperty("requester", userEntity.getKey());
 
       datastore.put(requestEntity);
     }

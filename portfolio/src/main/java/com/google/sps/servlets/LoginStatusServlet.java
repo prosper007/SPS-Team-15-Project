@@ -26,8 +26,23 @@ public class LoginStatusServlet extends HttpServlet {
     String loginUrl = userService.createLoginURL("/");
     String logoutUrl = userService.createLogoutURL("/");
     AuthInfo authInfo = new AuthInfo(isUserLoggedIn, loginUrl, logoutUrl);
+    
+
     if(isUserLoggedIn) {
-      authInfo.userName = getUserName(userService.getCurrentUser().getUserId());
+      // save user info
+      String id = userService.getCurrentUser().getUserId();
+      String nickname = userService.getCurrentUser().getNickname();
+      String email = userService.getCurrentUser().getEmail();
+      
+      Entity userEntity = new Entity("User", id);
+      userEntity.setProperty("nickname", nickname);
+      userEntity.setProperty("email", email);
+
+      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+      datastore.put(userEntity);
+
+
+      authInfo.userName = isStringValid(nickname) ? nickname : email;
     }
 
     Gson gson = new Gson();
@@ -37,17 +52,8 @@ public class LoginStatusServlet extends HttpServlet {
     response.getWriter().println(userStatus);
   }
 
-  private String getUserName(String id) {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    Query query =
-        new Query("UserInfo")
-            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
-    PreparedQuery results = datastore.prepare(query);
-    Entity entity = results.asSingleEntity();
-    if (entity == null) {
-      return "";
-    }
-    Text userNameAsText = (Text) entity.getProperty("username");
-    return userNameAsText.getValue();
+  private Boolean isStringValid(String value){
+    return value != null && !value.trim().isEmpty();
   }
+
 }

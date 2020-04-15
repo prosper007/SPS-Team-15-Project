@@ -34,6 +34,7 @@ import java.util.Date;
 import com.google.sps.data.BookRequest;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.sps.data.User;
 
 
 @WebServlet("/requests")
@@ -56,6 +57,17 @@ public class RequestsServlet extends HttpServlet {
         e.printStackTrace();
         continue;
       }
+
+      Key userKey = (Key) entity.getProperty("requester");
+      Entity userEntity = null;
+      
+      try{
+        userEntity = datastore.get(userKey);
+      } catch(EntityNotFoundException e){
+        e.printStackTrace();
+        continue;
+      }
+      
       String bookTitle = (String) bookEntity.getProperty("title");
       String bookAuthor = (String) bookEntity.getProperty("author");
       String bookIsbn = (String) bookEntity.getProperty("isbn");
@@ -66,7 +78,12 @@ public class RequestsServlet extends HttpServlet {
 
       String bookRequestKey = KeyFactory.keyToString(entity.getKey());
 
-      BookRequest bookRequest = new BookRequest(book, returnDate, status, bookRequestKey);
+
+      String email = (String) userEntity.getProperty("email");
+      String nickname = (String) userEntity.getProperty("nickname");
+      User requester = new User(email, nickname);
+
+      BookRequest bookRequest = new BookRequest(book, returnDate, status, bookRequestKey, requester);
 
       bookRequests.add(bookRequest);
     }

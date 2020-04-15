@@ -29,6 +29,9 @@ function createRequestElement(bookRequest) {
   const statusElement = document.createElement('div');
   statusElement.innerText = "Status: " + bookRequest.status;
 
+  const requesterElement = document.createElement('div');
+  requesterElement.innerText = "Requester: " + bookRequest.requester.email;
+
   const container = document.createElement('div');
   container.classList.add('book-request');
   container.appendChild(titleElement);
@@ -36,6 +39,7 @@ function createRequestElement(bookRequest) {
   container.appendChild(isbnElement);
   container.appendChild(returnDateElement);
   container.appendChild(statusElement);
+  container.appendChild(requesterElement);
 
   const requestElement = document.createElement('a');
   requestElement.href = `/view-request/${bookRequest.bookRequestKey}`;
@@ -46,16 +50,15 @@ function createRequestElement(bookRequest) {
 async function getLoginStatus() {
   const response = await fetch('/login-status');
   const authInfo = await response.json();
-  console.log(authInfo);
+
   const loginLink = document.getElementById('login-link');
-  
   if(!authInfo.isUserLoggedIn){
     loginLink.href = authInfo.loginUrl;
     return;
   }
 
   const makeRequestLink = document.getElementById('make-request-link');
-  makeRequestLink.href = 'make-request';
+  makeRequestLink.href = '/make-request';
   const logoutLink = document.getElementById('logout-link');
   logoutLink.href = authInfo.logoutUrl;
   const loggedInContainer = document.getElementById('logged-in-container');

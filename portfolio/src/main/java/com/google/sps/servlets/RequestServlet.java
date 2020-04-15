@@ -32,6 +32,7 @@ import com.google.gson.Gson;
 import com.google.sps.data.Book;
 import com.google.sps.data.BookRequest;
 import java.util.Date;
+import com.google.sps.data.User;
 
 @WebServlet("/request/*")
 public class RequestServlet extends HttpServlet {
@@ -64,6 +65,18 @@ public class RequestServlet extends HttpServlet {
       return;
     }
 
+    Key userKey = (Key) requestEntity.getProperty("requester");
+    Entity userEntity = null;
+    
+    try{
+      userEntity = datastore.get(userKey);
+    } catch(EntityNotFoundException e){
+      e.printStackTrace();
+      // if user is missing, something went wrong internally
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      return;
+    }
+
     String bookTitle = (String) bookEntity.getProperty("title");
     String bookAuthor = (String) bookEntity.getProperty("author");
     String bookIsbn = (String) bookEntity.getProperty("isbn");
@@ -74,7 +87,11 @@ public class RequestServlet extends HttpServlet {
 
     String bookRequestKey = KeyFactory.keyToString(requestEntity.getKey());
 
-    BookRequest bookRequest = new BookRequest(book, returnDate, status, bookRequestKey);
+    String email = (String) userEntity.getProperty("email");
+    String nickname = (String) userEntity.getProperty("nickname");
+    User requester = new User(email, nickname);
+
+    BookRequest bookRequest = new BookRequest(book, returnDate, status, bookRequestKey, requester);
 
     String json = convertToJson(bookRequest);
 
