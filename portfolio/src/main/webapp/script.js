@@ -15,34 +15,30 @@
 function createRequestElement(bookRequest) {
   
   const titleElement = document.createElement('div');
-  titleElement.innerText = "Title: " + bookRequest.book.title;
+  titleElement.classList.add('title-container');
+  titleElement.innerText = `${bookRequest.book.title}`;
 
   const authorElement = document.createElement('div');
-  authorElement.innerText = "Author: " + bookRequest.book.author;
+  authorElement.classList.add('author-container');
+  authorElement.innerText = `by ${bookRequest.book.author}`;
 
-  const isbnElement = document.createElement('div');
-  isbnElement.innerText = "ISBN: " + bookRequest.book.isbn;
-  
-  const returnDateElement = document.createElement('div');
-  returnDateElement.innerText = "Return date: " + bookRequest.returnDate;
+  const bookElement = document.createElement('div');
+  bookElement.classList.add('book-element');
+  bookElement.appendChild(titleElement);
+  bookElement.appendChild(authorElement);
 
-  const statusElement = document.createElement('div');
-  statusElement.innerText = "Status: " + bookRequest.status;
-
-  const requesterElement = document.createElement('div');
-  requesterElement.innerText = "Requester: " + bookRequest.requester.email;
+  const viewRequestText = document.createElement('div');
+  viewRequestText.classList.add('view-request-er-link')
+  viewRequestText.innerText = `View request by ${bookRequest.requester.email}`;
 
   const container = document.createElement('div');
   container.classList.add('book-request');
-  container.appendChild(titleElement);
-  container.appendChild(authorElement);
-  container.appendChild(isbnElement);
-  container.appendChild(returnDateElement);
-  container.appendChild(statusElement);
-  container.appendChild(requesterElement);
+  container.appendChild(bookElement);
+  container.appendChild(viewRequestText);
 
   const requestElement = document.createElement('a');
   requestElement.href = `/view-request/${bookRequest.bookRequestKey}`;
+  requestElement.classList.add('request-link');
   requestElement.appendChild(container);
   return requestElement;
 }
