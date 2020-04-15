@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Request a book</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js"></script>
+  </head>
+  <body onload="getLoginStatus()">
+    <div id="root-div">
+      <nav id="navbar">
+        <a id="nav-brand" href="/">Our Site</a>
+        <span id="nav-group">
+          <div id="logged-in-container">
+            <!--Link hrefs are inserted dynamically from getLoginStatus() in script.js -->
+            <a id="make-request-link" class="nav-link">Request a book</a>
+            <a id="logout-link" class="nav-link">Logout</a>
+          </div>  
+          <a id="login-link" class="nav-link">Please login to request a book</a>
+        </span>
+      </nav>
+      <div id="request-form-content">
+        <div id="header-container">
+          <h1 id="header">Request a Book</h1>
+        </div>
+        <form action="/make-request" method="POST" id="request-form">
+          <div id="request-form-container">
+            <div id="pattern">
+              <div id="line-content">
+                <br/>
+                <br/>
+                Hello! 
+                <br/>
+                <br/>
+                <strong> My name is </strong>
+                <input
+                  id="title-input" 
+                  class="request-field" 
+                  type="text" 
+                  name="userName"
+                  placeholder="Shrek"
+                />
+                . I would like to borrow a <strong> book titled </strong>
+                <input
+                  id="title-input" 
+                  class="request-field" 
+                  type="text" 
+                  name="title"
+                  placeholder="Pride and Prejudice"
+                />
+                . It was <strong> written by </strong> 
+                <input
+                  id="author-input" 
+                  class="request-field" 
+                  type="text" 
+                  name="author"
+                  placeholder="Jane Austen"
+                />
+                and its <strong> ISBN number </strong> is
+                <input
+                  id="isbn-input" 
+                  class="request-field" 
+                  type="number" 
+                  name="isbn"
+                  placeholder="9781566199094" 
+                />
+                . I will <strong>return it by the following date:</strong>  
+                <input
+                  id="date-input" 
+                  class="request-field" 
+                  type="date" 
+                  name="return-date"
+                />.
+                <br/>
+                <br/>
+                Please contact me if you can lend me the book. Thank you!
+              </div>
+            </div>
+          </div>
+          <input 
+            class="submit-request-form-button"
+            type="submit" 
+            value="Make Request!"
+          />
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

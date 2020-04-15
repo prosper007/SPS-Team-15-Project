@@ -12,17 +12,75 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Adds a random greeting to the page.
- */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+function createRequestElement(bookRequest) {
+  
+  const titleElement = document.createElement('div');
+  titleElement.classList.add('title-container');
+  titleElement.innerText = `${bookRequest.book.title}`;
 
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+  const authorElement = document.createElement('div');
+  authorElement.classList.add('author-container');
+  authorElement.innerText = `by ${bookRequest.book.author}`;
 
-  // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+  const bookElement = document.createElement('div');
+  bookElement.classList.add('book-element');
+  bookElement.appendChild(titleElement);
+  bookElement.appendChild(authorElement);
+
+  const viewRequestText = document.createElement('div');
+  viewRequestText.classList.add('view-request-er-link')
+  viewRequestText.innerText = `View request by ${bookRequest.requester.email}`;
+
+  const container = document.createElement('div');
+  container.classList.add('book-request');
+  container.appendChild(bookElement);
+  container.appendChild(viewRequestText);
+
+  const requestElement = document.createElement('a');
+  requestElement.href = `/view-request/${bookRequest.bookRequestKey}`;
+  requestElement.classList.add('request-link');
+  requestElement.appendChild(container);
+  return requestElement;
+}
+
+async function getLoginStatus() {
+  const response = await fetch('/login-status');
+  const authInfo = await response.json();
+
+  const loginLink = document.getElementById('login-link');
+  if(!authInfo.isUserLoggedIn){
+    loginLink.href = authInfo.loginUrl;
+    return;
+  }
+
+  const makeRequestLink = document.getElementById('make-request-link');
+  makeRequestLink.href = '/make-request';
+  const logoutLink = document.getElementById('logout-link');
+  logoutLink.href = authInfo.logoutUrl;
+  const loggedInContainer = document.getElementById('logged-in-container');
+  loggedInContainer.style.display = 'flex';
+  loginLink.style.display = 'none';
+}
+
+async function getRequests(){
+  const response = await fetch('/requests');
+  const bookRequests = await response.json();
+  const contentElement = document.getElementById("book-requests");
+  bookRequests.forEach((bookRequest) => {
+    contentElement.appendChild(createRequestElement(bookRequest));
+  });
+}
+
+async function getRequest(){
+  const path = window.location.pathname.split('/');
+  //request key should be last part of url
+  requestKey = path[path.length-1];
+  const response = await fetch(`/request/${requestKey}`);
+  if(response.status != 200){
+    window.location.replace("/request-not-found");
+    return;
+  }
+  const bookRequest = await response.json();
+  const contentElement = document.getElementById("content");
+  contentElement.appendChild(createRequestElement(bookRequest));
 }
