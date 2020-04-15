@@ -69,7 +69,7 @@ async function getLoginStatus() {
 async function getRequests(){
   const response = await fetch('/requests');
   const bookRequests = await response.json();
-  const contentElement = document.getElementById("content");
+  const contentElement = document.getElementById("book-requests");
   bookRequests.forEach((bookRequest) => {
     contentElement.appendChild(createRequestElement(bookRequest));
   });
