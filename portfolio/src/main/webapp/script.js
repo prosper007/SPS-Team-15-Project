@@ -105,7 +105,7 @@ async function getRequest(){
     const currentUserEmail = authInfo.currentUser.email;
     const isUserRequestOwner = requesterEmail.localeCompare(currentUserEmail) == 0;
     if(isUserRequestOwner) {
-      headerElement.innerHTML = `Your request for <em>${bookTitle}</em> ${hasAuthor ? `by ${bookAuthor}` : ''}`;
+      headerElement.innerHTML = `Your Request for <em>${bookTitle}</em> ${hasAuthor ? `by ${bookAuthor}` : ''}`;
       
       const statusElement = document.getElementById('request-status');
       const isUnfulfilled = bookRequest.status.localeCompare("UNFULFILLED") === 0
@@ -160,7 +160,10 @@ async function getRequest(){
   }
 
   const dateElement = document.getElementById('date-display');
-  dateElement.innerText = `${bookRequest.returnDate.substring(0, 12)}`;
+  // assuming date is in format "yyyy-MM-dd"
+  const returnDateParts = bookRequest.returnDate.split('-');
+  const returnDate = new Date(returnDateParts[0], returnDateParts[1], returnDateParts[2]);
+  dateElement.innerText = `${returnDate.toDateString()}`;
 
   const emailElement = document.getElementById('email');
   emailElement.innerText = `${requesterEmail}`;
@@ -182,4 +185,34 @@ async function populateForm(){
     userNameInput = document.getElementById('user-name-input');
     userNameInput.value = userName;
   }
+}
+
+async function populateEditForm(){
+  const path = window.location.pathname.split('/');
+  //request key should be last part of url
+  requestKey = path[path.length-1];
+  const response = await fetch(`/request/${requestKey}`);
+  if(response.status != 200){
+    window.location.replace("/request-not-found");
+    return;
+  }
+  const bookRequest = await response.json();
+
+  const userNameInput = document.getElementById('user-name-input');
+  userNameInput.value = bookRequest.requester.userName;
+  
+  const titleInput = document.getElementById('title-input');
+  titleInput.value = bookRequest.book.title;
+
+  const authorInput = document.getElementById('author-input');
+  authorInput.value = bookRequest.book.author;
+
+  const isbnInput = document.getElementById('isbn-input');
+  isbnInput.value = bookRequest.book.isbn;
+
+  const dateInput = document.getElementById('date-input');
+  dateInput.value = bookRequest.returnDate;
+
+  const emailDisplay = document.getElementById('email');
+  emailDisplay.innerText = bookRequest.requester.email;
 }

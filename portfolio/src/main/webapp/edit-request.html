@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Request a book</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js"></script>
+  </head>
+  <body onload="getLoginStatus(); populateEditForm()">
+    <div id="root-div">
+      <nav id="navbar">
+        <a id="nav-brand" href="/">Our Site</a>
+        <span id="nav-group">
+          <div id="logged-in-container">
+            <!--Link hrefs are inserted dynamically from getLoginStatus() in script.js -->
+            <a id="make-request-link" class="nav-link">Request a book</a>
+            <a id="logout-link" class="nav-link">Logout</a>
+          </div>  
+          <a id="login-link" class="nav-link">Please login to request a book</a>
+        </span>
+      </nav>
+      <div id="request-form-content">
+        <div id="header-container">
+          <h1 id="header">Edit Your Request</h1>
+        </div>
+        <form action="/make-request" method="POST" id="request-form">
+          <div id="request-form-container">
+            <div id="pattern">
+              <div id="line-content">
+                <br/>
+                <br/>
+                Hello! 
+                <br/>
+                <br/>
+                My name's
+                <input
+                  id="user-name-input" 
+                  class="request-field required" 
+                  type="text" 
+                  name="userName"
+                  placeholder="Shrek"
+                />.
+                I would like to borrow a book titled "
+                <input
+                  id="title-input" 
+                  class="request-field required" 
+                  type="text" 
+                  name="title"
+                  placeholder="Pride and Prejudice"
+                />".
+                It was written by
+                <input
+                  id="author-input" 
+                  class="request-field" 
+                  type="text" 
+                  name="author"
+                  placeholder="Jane Austen"
+                />.
+                The book's ISBN number is
+                <input
+                  id="isbn-input" 
+                  class="request-field" 
+                  type="number" 
+                  name="isbn"
+                  placeholder="9781566199094" 
+                />.
+                I will return it by the following date: 
+                <input
+                  id="date-input" 
+                  class="request-field required" 
+                  type="date" 
+                  name="return-date"
+                />.
+                <br/>
+                <br/>
+                Please email me at <span id="email"></span> if you can lend me the book. Thank you!
+              </div>
+            </div>
+          </div>
+          <div id="request-status-container">
+            Have you gotten your book? 
+            <input type="radio" id="yes-button" name="status" value="FULFILLED">
+            <label for="yes-button">Yes</label>
+            <input type="radio" id="no-button" name="status" value="UNFULFILLED" checked>
+            <label for="no-button">No</label>
+          </div>
+          <div id="required-fields-text">
+            <span class="required">Your name</span>, the <span class="required">book title</span> and your intended
+            <span class="required">return date</span> are required fields.
+          </div>
+          <input 
+            class="submit-request-form-button"
+            type="submit" 
+            value="Edit Request!"
+          />
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

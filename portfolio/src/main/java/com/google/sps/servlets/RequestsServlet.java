@@ -35,6 +35,7 @@ import com.google.sps.data.BookRequest;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.sps.data.User;
+import java.text.SimpleDateFormat;
 
 
 @WebServlet("/requests")
@@ -73,7 +74,10 @@ public class RequestsServlet extends HttpServlet {
       String bookIsbn = (String) bookEntity.getProperty("isbn");
       Book book = new Book(bookTitle, bookAuthor, bookIsbn);
 
-      Date returnDate = (Date) entity.getProperty("returnDate") ;
+      Date returnDateObject = (Date) entity.getProperty("returnDate") ;
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      String returnDate = sdf.format(returnDateObject);
+      
       String status = (String) entity.getProperty("status");
 
       String bookRequestKey = KeyFactory.keyToString(entity.getKey());

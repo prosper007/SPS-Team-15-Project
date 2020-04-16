@@ -33,6 +33,7 @@ import com.google.sps.data.Book;
 import com.google.sps.data.BookRequest;
 import java.util.Date;
 import com.google.sps.data.User;
+import java.text.SimpleDateFormat;
 
 @WebServlet("/request/*")
 public class RequestServlet extends HttpServlet {
@@ -65,11 +66,11 @@ public class RequestServlet extends HttpServlet {
       return;
     }
 
-    Key userKey = (Key) requestEntity.getProperty("requester");
-    Entity userEntity = null;
+    Key requesterKey = (Key) requestEntity.getProperty("requester");
+    Entity requesterEntity = null;
     
     try{
-      userEntity = datastore.get(userKey);
+      requesterEntity = datastore.get(requesterKey);
     } catch(EntityNotFoundException e){
       e.printStackTrace();
       // if user is missing, something went wrong internally
@@ -82,13 +83,16 @@ public class RequestServlet extends HttpServlet {
     String bookIsbn = (String) bookEntity.getProperty("isbn");
     Book book = new Book(bookTitle, bookAuthor, bookIsbn);
 
-    Date returnDate = (Date) requestEntity.getProperty("returnDate") ;
+    Date returnDateObject = (Date) requestEntity.getProperty("returnDate") ;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    String returnDate = sdf.format(returnDateObject);
+    
     String status = (String) requestEntity.getProperty("status");
 
     String bookRequestKey = KeyFactory.keyToString(requestEntity.getKey());
 
-    String email = (String) userEntity.getProperty("email");
-    String userName = (String) userEntity.getProperty("userName");
+    String email = (String) requesterEntity.getProperty("email");
+    String userName = (String) requesterEntity.getProperty("userName");
     User requester = new User(email, userName);
 
     BookRequest bookRequest = new BookRequest(book, returnDate, status, bookRequestKey, requester);

@@ -41,13 +41,18 @@ public class DeleteRequestServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    UserService userService = UserServiceFactory.getUserService();
+    if(!userService.isUserLoggedIn()){
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      response.sendRedirect("/");
+      return;
+    } 
 
     //First find the specific request. If found, then check if the correct user is 
     //trying to delete the request.
     String requestKeyString = request.getPathInfo().substring(1);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    UserService userService = UserServiceFactory.getUserService();
 
     Entity requestEntity;
     Key requestKey = null;
@@ -72,11 +77,6 @@ public class DeleteRequestServlet extends HttpServlet {
     }
 
     String email = (String) userEntity.getProperty("email");
-    if(!userService.isUserLoggedIn()){
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      response.sendRedirect("/");
-      return;
-    } 
 
     if (email.equals(userService.getCurrentUser().getEmail())){
         datastore.delete(requestKey);
