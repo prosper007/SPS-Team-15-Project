@@ -206,6 +206,8 @@ body {
 }
 #request-status {
   color: #804f2d;
+  margin-left: 1em;
+
 }
 #required-fields-text {
   margin-top: 2em;

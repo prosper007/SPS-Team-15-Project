@@ -115,7 +115,7 @@ async function getRequest(){
       const statusContainer = document.getElementById('request-status-container');
       statusContainer.classList.remove('hide');
 
-      ctaElement.innerText = 'Edit Request';
+      ctaElement.innerText = 'Update Request';
       ctaElement.href = `/edit-request/${requestKey}`;
 
       const deleteElement = document.getElementById('delete-link');
@@ -215,4 +215,7 @@ async function populateEditForm(){
 
   const emailDisplay = document.getElementById('email');
   emailDisplay.innerText = bookRequest.requester.email;
+
+  const formAction = document.getElementById('request-form');
+  formAction.action = `/edit-request/${requestKey}`
 }
