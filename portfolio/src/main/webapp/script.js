@@ -106,6 +106,15 @@ async function getRequest(){
     const isUserRequestOwner = requesterEmail.localeCompare(currentUserEmail) == 0;
     if(isUserRequestOwner) {
       headerElement.innerHTML = `Your request for <em>${bookTitle}</em> ${hasAuthor ? `by ${bookAuthor}` : ''}`;
+      
+      const statusElement = document.getElementById('request-status');
+      const isUnfulfilled = bookRequest.status.localeCompare("UNFULFILLED") === 0
+      statusElement.innerText = `${isUnfulfilled ? 'No' : 'Yes'}`;
+      const statusTitle = document.getElementById('book-title');
+      statusTitle.innerHTML = `<em>${bookTitle}</em>`;
+      const statusContainer = document.getElementById('request-status-container');
+      statusContainer.classList.remove('hide');
+
       ctaElement.innerText = 'Edit Request';
       ctaElement.href = `/edit-request/${requestKey}`;
 
