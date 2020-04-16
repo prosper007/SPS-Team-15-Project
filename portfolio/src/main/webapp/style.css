@@ -175,3 +175,13 @@ body {
 .submit-request-form-button:hover {
   background-color: #ec9c40;
 }
+#view-request-content {
+  display: flex;
+  justify-content: center;
+}
+.hide {
+  display: none;
+}
+.field-display {
+  color: #ec9c40;
+}

@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Our Site</title>
-    <link rel="stylesheet" href="/style.css">
-    <script src="/script.js"></script>
-  </head>
-  <body onload="getRequest(); getLoginStatus()">
-    <div id="root-div">
-      <nav id="navbar">
-        <a id="nav-brand" href="/">Our Site</a>
-        <span id="nav-group">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Our Site</title>
+	<link rel="stylesheet" href="/style.css">
+	<script src="/script.js"></script>
+</head>
+
+<body onload="getRequest(); getLoginStatus()">
+	<div id="root-div">
+		<nav id="navbar">
+			<a id="nav-brand" href="/">Our Site</a>
+			<span id="nav-group">
           <div id="logged-in-container">
             <!--Link hrefs are inserted dynamically from getLoginStatus() in script.js -->
             <a id="make-request-link" class="nav-link">Request a book</a>
@@ -18,10 +20,41 @@
           </div>  
           <a id="login-link" class="nav-link">Please login to request a book</a>
         </span>
-      </nav>
-      <div id="content">
-        <h1>Hereee</h1>
-      </div>
-    </div>
-  </body>
+		</nav>
+		<div id="content">
+			<div id="header-container">
+				<h1 id="header"></h1>
+			</div>
+
+			<div id="view-request-content">
+				<div id="request-form-container">
+					<div id="pattern">
+						<div id="line-content">
+							<br/>
+							<br/>
+              Hello!
+							<br/>
+							<br/>
+              My name's <span id="user-name-display" class="field-display"></span>.
+
+							I would like to borrow a book titled "<span id="title-display" class="field-display"></span>".
+
+							<span id="author-container" class="hide">
+                It was written by <span id="author-display"></span>.
+							</span>
+							<span id="isbn-container" class="hide">
+                The book's ISBN number is <span id="isbn-display" class="field-display"></span>.
+							</span>
+							I will return it by the following date: <span id="date-display" class="field-display"></span>.
+							<br/>
+							<br/>
+                Please email me at <span id="email" class="field-display"></span> if you can lend me the book. Thank you!
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
 </html>

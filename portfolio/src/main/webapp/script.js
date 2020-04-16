@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function isStringEmpty(string){
+  return string == null || string.trim().length == 0;
+}
+
 function createRequestElement(bookRequest) {
   
   const titleElement = document.createElement('div');
@@ -20,7 +24,8 @@ function createRequestElement(bookRequest) {
 
   const authorElement = document.createElement('div');
   authorElement.classList.add('author-container');
-  authorElement.innerText = `by ${bookRequest.book.author}`;
+  const hasAuthor = !isStringEmpty(bookRequest.book.author);
+  authorElement.innerText = `${hasAuthor ? `by ${bookRequest.book.author}` : ''}`;
 
   const bookElement = document.createElement('div');
   bookElement.classList.add('book-element');
@@ -96,8 +101,52 @@ async function getRequest(){
     return;
   }
   const bookRequest = await response.json();
-  const contentElement = document.getElementById("content");
-  contentElement.appendChild(createRequestElement(bookRequest));
+  
+  const authResponse = await fetch('/login-status');
+  const authInfo = await authResponse.json();
+  const requesterEmail = bookRequest.requester.email;
+  const hasAuthor = !isStringEmpty(bookRequest.book.author);
+  const headerElement = document.getElementById('header');
+  if(authInfo.isUserLoggedIn){
+    const currentUserEmail = authInfo.currentUser.email;
+    const isUserRequestOwner = requesterEmail.localeCompare(currentUserEmail) == 0;
+    if(isUserRequestOwner) {
+      headerElement.innerHTML = `Your request for <em>${bookRequest.book.title}</em> ${hasAuthor ? `by ${bookRequest.book.author}` : ''}`
+    } else {
+      headerElement.innerHTML = `Do you have <em>${bookRequest.book.title}</em> ${hasAuthor ? `by ${bookRequest.book.author}` : ''}?`
+    }
+  
+  } else {
+    headerElement.innerText = `Do you have ${bookRequest.book.title} ${hasAuthor ? `by ${bookRequest.book.author}` : ''}?`
+  }
+
+  const userNameElement = document.getElementById('user-name-display');
+  userNameElement.innerText = `${bookRequest.requester.userName}`;
+
+  const titleElement = document.getElementById('title-display');
+  titleElement.innerText = `${bookRequest.book.title}`;
+  
+  
+  if(hasAuthor) {
+    const authorDisplay = document.getElementById('author-display');
+    authorDisplay.innerText = `${bookRequest.book.author}`;
+    const authorContainer = document.getElementById('author-container');
+    authorContainer.classList.remove('hide');
+  }
+
+  const hasIsbn = !isStringEmpty(bookRequest.book.isbn);
+  if(hasIsbn) {
+    const isbnDisplay = document.getElementById('isbn-display');
+    isbnDisplay.innerText = `${bookRequest.book.isbn}`;
+    const authorContainer = document.getElementById('isbn-container');
+    authorContainer.classList.remove('hide');
+  }
+
+  const dateElement = document.getElementById('date-display');
+  dateElement.innerText = `${bookRequest.returnDate.substring(0, 12)}`;
+
+  const emailElement = document.getElementById('email');
+  emailElement.innerText = `${requesterEmail}`;
 }
 
 async function populateForm(){
@@ -111,7 +160,7 @@ async function populateForm(){
   }
   emailContainer.innerText = authInfo.currentUser.email;
   const userName = authInfo.currentUser.userName;
-  if(userName != null && userName.trim().length > 0){
+  if(!isStringEmpty(userName)){
     userNameInput = document.getElementById('user-name-input');
     userNameInput.value = userName;
   }
