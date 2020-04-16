@@ -64,6 +64,13 @@ public class EditRequestServlet extends HttpServlet {
       return;
     }
 
+    // date cannot be in the past
+    if(returnDate.before(new Date())){
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      response.sendRedirect("/");
+      return;
+    }
+
     long timestamp = System.currentTimeMillis();
     String title = request.getParameter("title");
     String userName = request.getParameter("userName");
@@ -91,7 +98,7 @@ public class EditRequestServlet extends HttpServlet {
       response.sendRedirect("/");
       return;
     }
-    
+
     Entity bookEntity;
     try{
       Key bookKey = (Key) requestEntity.getProperty("book");
@@ -134,7 +141,6 @@ public class EditRequestServlet extends HttpServlet {
 
     datastore.put(requestEntity);
     final String UNFULFILLED = "UNFULFILLED";
-    System.out.println(status);
     if(status.equals(UNFULFILLED)){
       String requestUrl = "/view-request/"+requestKeyString;
       response.sendRedirect(requestUrl);

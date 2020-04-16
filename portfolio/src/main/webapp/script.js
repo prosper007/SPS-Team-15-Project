@@ -216,6 +216,12 @@ async function populateEditForm(){
   const emailDisplay = document.getElementById('email');
   emailDisplay.innerText = bookRequest.requester.email;
 
+  const yesButton = document.getElementById('yes-button');
+  yesButton.checked = bookRequest.status === "FULFILLED";
+
+  const noButton = document.getElementById('no-button');
+  noButton.checked = bookRequest.status === "UNFULFILLED";
+
   const formAction = document.getElementById('request-form');
   formAction.action = `/edit-request/${requestKey}`
 }

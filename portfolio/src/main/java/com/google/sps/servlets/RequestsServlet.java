@@ -36,6 +36,9 @@ import com.google.gson.Gson;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.sps.data.User;
 import java.text.SimpleDateFormat;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 
 @WebServlet("/requests")
@@ -43,7 +46,9 @@ public class RequestsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Request").addSort("timestamp", SortDirection.ASCENDING);
+    final String UNFULFILLED = "UNFULFILLED";
+    Filter unfulfilledRequests = new FilterPredicate("status", FilterOperator.EQUAL, UNFULFILLED);
+    Query query = new Query("Request").setFilter(unfulfilledRequests).addSort("timestamp", SortDirection.ASCENDING);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
