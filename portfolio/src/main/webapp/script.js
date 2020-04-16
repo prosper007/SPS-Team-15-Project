@@ -36,11 +36,26 @@ function createRequestElement(bookRequest) {
   container.appendChild(bookElement);
   container.appendChild(viewRequestText);
 
+
   const requestElement = document.createElement('a');
   requestElement.href = `/view-request/${bookRequest.bookRequestKey}`;
   requestElement.classList.add('request-link');
   requestElement.appendChild(container);
-  return requestElement;
+  //return requestElement;
+
+  const requestDeleteButtonElement = document.createElement('BUTTON');
+  requestDeleteButtonElement.innerHTML = "Delete Request";
+
+  const requestDeleteElement = document.createElement('a');
+  requestDeleteElement.href = `/delete-request/${bookRequest.bookRequestKey}`;
+  requestDeleteElement.classList.add('request-link');
+  requestDeleteElement.appendChild(requestDeleteButtonElement)
+
+  const requestContainer = document.createElement('div');
+  requestContainer.appendChild(requestElement);
+  requestContainer.appendChild(requestDeleteElement);
+
+  return requestContainer;
 }
 
 async function getLoginStatus() {
