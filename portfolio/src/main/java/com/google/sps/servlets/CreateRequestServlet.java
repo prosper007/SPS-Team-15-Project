@@ -29,6 +29,9 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @WebServlet("/make-request")
 public class CreateRequestServlet extends HttpServlet {
@@ -49,26 +52,34 @@ public class CreateRequestServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
     
+    // must be logged in
     if(!userService.isUserLoggedIn()){
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       response.sendRedirect("/");
       return;
     }
 
-    long timestamp = System.currentTimeMillis();
-    String title = request.getParameter("title");
-    String author = request.getParameter("author");
-    String isbn = request.getParameter("isbn");
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    // date field is required
     String dateString = request.getParameter("return-date");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     Date returnDate = null;
     try {  
       returnDate = sdf.parse(dateString);
     } catch (ParseException e) {
       e.printStackTrace();
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      response.sendRedirect("/");
+      return;
     }
+
+    long timestamp = System.currentTimeMillis();
+    String title = request.getParameter("title");
+    String userName = request.getParameter("userName");
+    String author = request.getParameter("author");
+    String isbn = request.getParameter("isbn");
     
-    if(isStringValid(title)) {      
+    // book title and user name fields are required
+    if(isStringValid(title) && isStringValid(userName)) {      
       Entity bookEntity = new Entity("Book");
       bookEntity.setProperty("timestamp", timestamp);
       bookEntity.setProperty("title", title);
@@ -78,14 +89,19 @@ public class CreateRequestServlet extends HttpServlet {
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
       datastore.put(bookEntity);
+      
       // update user info
       String id = userService.getCurrentUser().getUserId();
-      String nickname = userService.getCurrentUser().getNickname();
       String email = userService.getCurrentUser().getEmail();
-      
-      Entity userEntity = new Entity("User", id);
-      userEntity.setProperty("nickname", nickname);
-      userEntity.setProperty("email", email);
+      Entity userEntity;
+      try {
+        Key userKey = KeyFactory.createKey("User", id);
+        userEntity = datastore.get(userKey);
+      } catch(EntityNotFoundException e) {
+        userEntity = new Entity("User", id);
+        userEntity.setProperty("email", email);
+      }
+      userEntity.setProperty("userName", userName);
 
       datastore.put(userEntity);
 

@@ -80,8 +80,8 @@ public class RequestsServlet extends HttpServlet {
 
 
       String email = (String) userEntity.getProperty("email");
-      String nickname = (String) userEntity.getProperty("nickname");
-      User requester = new User(email, nickname);
+      String userName = (String) userEntity.getProperty("userName");
+      User requester = new User(email, userName);
 
       BookRequest bookRequest = new BookRequest(book, returnDate, status, bookRequestKey, requester);
 

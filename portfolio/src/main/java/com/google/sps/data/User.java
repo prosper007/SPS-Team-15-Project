@@ -3,10 +3,10 @@ package com.google.sps.data;
 public final class User {
 
   private final String email;
-  private final String nickname;
+  private final String userName;
 
-  public User(String email, String nickname) {
+  public User(String email, String userName) {
     this.email = email;
-    this.nickname = nickname;
+    this.userName = userName;
   }
 }

@@ -15,12 +15,17 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Text;
 import com.google.sps.data.AuthInfo;
+import com.google.sps.data.User;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 @WebServlet("/login-status")
 public class LoginStatusServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     
     boolean isUserLoggedIn = userService.isUserLoggedIn();
     String loginUrl = userService.createLoginURL("/");
@@ -31,18 +36,21 @@ public class LoginStatusServlet extends HttpServlet {
     if(isUserLoggedIn) {
       // save user info
       String id = userService.getCurrentUser().getUserId();
-      String nickname = userService.getCurrentUser().getNickname();
       String email = userService.getCurrentUser().getEmail();
-      
-      Entity userEntity = new Entity("User", id);
-      userEntity.setProperty("nickname", nickname);
-      userEntity.setProperty("email", email);
+      Entity userEntity;
+      try{
+        Key userKey = KeyFactory.createKey("User", id);
+        userEntity = datastore.get(userKey);
+      } catch(EntityNotFoundException e){
+        userEntity = new Entity("User", id);
+        userEntity.setProperty("email", email);
+      }
+      String userName = (String) userEntity.getProperty("userName");
 
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       datastore.put(userEntity);
 
-
-      authInfo.userName = isStringValid(nickname) ? nickname : email;
+      User currentUser = new User(email, userName);
+      authInfo.currentUser = currentUser;
     }
 
     Gson gson = new Gson();

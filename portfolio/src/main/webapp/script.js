@@ -29,7 +29,7 @@ function createRequestElement(bookRequest) {
 
   const viewRequestText = document.createElement('div');
   viewRequestText.classList.add('view-request-er-link')
-  viewRequestText.innerText = `View request by ${bookRequest.requester.email}`;
+  viewRequestText.innerText = `View request by ${bookRequest.requester.userName}`;
 
   const container = document.createElement('div');
   container.classList.add('book-request');
@@ -98,4 +98,21 @@ async function getRequest(){
   const bookRequest = await response.json();
   const contentElement = document.getElementById("content");
   contentElement.appendChild(createRequestElement(bookRequest));
+}
+
+async function populateForm(){
+  const response = await fetch('/login-status');
+  const authInfo = await response.json();
+  const emailContainer = document.getElementById("email");
+  // should never be true as server redirects all logged out users to '/'
+  if(!authInfo.isUserLoggedIn) {
+    emailContainer.innerText = "INV@ALID.com";
+    return;
+  }
+  emailContainer.innerText = authInfo.currentUser.email;
+  const userName = authInfo.currentUser.userName;
+  if(userName != null && userName.trim().length > 0){
+    userNameInput = document.getElementById('user-name-input');
+    userNameInput.value = userName;
+  }
 }

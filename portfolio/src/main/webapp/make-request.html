@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/style.css">
     <script src="/script.js"></script>
   </head>
-  <body onload="getLoginStatus()">
+  <body onload="getLoginStatus(); populateForm()">
     <div id="root-div">
       <nav id="navbar">
         <a id="nav-brand" href="/">Our Site</a>
@@ -32,10 +32,10 @@
                 Hello! 
                 <br/>
                 <br/>
-                <strong> My name is </strong>
+                <strong> My name's </strong>
                 <input
-                  id="title-input" 
-                  class="request-field" 
+                  id="user-name-input" 
+                  class="request-field required" 
                   type="text" 
                   name="userName"
                   placeholder="Shrek"
@@ -43,7 +43,7 @@
                 . I would like to borrow a <strong> book titled </strong>
                 <input
                   id="title-input" 
-                  class="request-field" 
+                  class="request-field required" 
                   type="text" 
                   name="title"
                   placeholder="Pride and Prejudice"
@@ -67,15 +67,19 @@
                 . I will <strong>return it by the following date:</strong>  
                 <input
                   id="date-input" 
-                  class="request-field" 
+                  class="request-field required" 
                   type="date" 
                   name="return-date"
                 />.
                 <br/>
                 <br/>
-                Please contact me if you can lend me the book. Thank you!
+                Please email me at <span id="email"></span> if you can lend me the book. Thank you!
               </div>
             </div>
+          </div>
+          <div id="required-fields-text">
+            <span class="required">Your name</span>, the <span class="required">book title</span> and your intended
+            <span class="required">return date</span> are required fields.
           </div>
           <input 
             class="submit-request-form-button"

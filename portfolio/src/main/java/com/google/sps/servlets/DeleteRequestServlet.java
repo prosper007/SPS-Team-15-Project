@@ -72,14 +72,13 @@ public class DeleteRequestServlet extends HttpServlet {
     }
 
     String email = (String) userEntity.getProperty("email");
-    String nickname = (String) userEntity.getProperty("nickname");
     if(!userService.isUserLoggedIn()){
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       response.sendRedirect("/");
       return;
     } 
 
-    if (nickname.equals(userService.getCurrentUser().getEmail())){
+    if (email.equals(userService.getCurrentUser().getEmail())){
         datastore.delete(requestKey);
     }
 

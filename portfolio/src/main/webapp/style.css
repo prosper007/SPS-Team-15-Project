@@ -153,6 +153,9 @@ body {
   font-family: 'Dancing Script', cursive;
   border-bottom: 3px solid #804f2d;
 }
+.required {
+  border-bottom: 3px solid  #f18d1b;
+}
 #request-form {
   display: flex;
   flex-direction: column;
