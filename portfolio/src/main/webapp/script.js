@@ -97,6 +97,7 @@ async function getRequest(){
   const requesterName = bookRequest.requester.userName;
   const bookTitle = bookRequest.book.title;
 
+  document.title = `${bookTitle} ${hasAuthor ? ` by ${bookAuthor}` : ''}`
   const headerElement = document.getElementById('header');
   const ctaElement = document.getElementById('cta-link');
   const emailLink = `mailto:${requesterEmail}?Subject=Hey%20${requesterName}!%20I%20can%20lend%20you%20"${bookTitle}"`;
