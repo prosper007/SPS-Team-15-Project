@@ -35,6 +35,10 @@ import com.google.sps.data.BookRequest;
 import com.google.gson.Gson;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.sps.data.User;
+import java.text.SimpleDateFormat;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 
 @WebServlet("/requests")
@@ -42,7 +46,9 @@ public class RequestsServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Request").addSort("timestamp", SortDirection.ASCENDING);
+    final String UNFULFILLED = "UNFULFILLED";
+    Filter unfulfilledRequests = new FilterPredicate("status", FilterOperator.EQUAL, UNFULFILLED);
+    Query query = new Query("Request").setFilter(unfulfilledRequests).addSort("timestamp", SortDirection.ASCENDING);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
@@ -73,15 +79,18 @@ public class RequestsServlet extends HttpServlet {
       String bookIsbn = (String) bookEntity.getProperty("isbn");
       Book book = new Book(bookTitle, bookAuthor, bookIsbn);
 
-      Date returnDate = (Date) entity.getProperty("returnDate") ;
+      Date returnDateObject = (Date) entity.getProperty("returnDate") ;
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      String returnDate = sdf.format(returnDateObject);
+      
       String status = (String) entity.getProperty("status");
 
       String bookRequestKey = KeyFactory.keyToString(entity.getKey());
 
 
       String email = (String) userEntity.getProperty("email");
-      String nickname = (String) userEntity.getProperty("nickname");
-      User requester = new User(email, nickname);
+      String userName = (String) userEntity.getProperty("userName");
+      User requester = new User(email, userName);
 
       BookRequest bookRequest = new BookRequest(book, returnDate, status, bookRequestKey, requester);
 

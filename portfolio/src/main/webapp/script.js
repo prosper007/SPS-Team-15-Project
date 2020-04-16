@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function isStringEmpty(string){
+  return string == null || string.trim().length == 0;
+}
+
 function createRequestElement(bookRequest) {
   
   const titleElement = document.createElement('div');
@@ -20,7 +24,8 @@ function createRequestElement(bookRequest) {
 
   const authorElement = document.createElement('div');
   authorElement.classList.add('author-container');
-  authorElement.innerText = `by ${bookRequest.book.author}`;
+  const hasAuthor = !isStringEmpty(bookRequest.book.author);
+  authorElement.innerText = `${hasAuthor ? `by ${bookRequest.book.author}` : ''}`;
 
   const bookElement = document.createElement('div');
   bookElement.classList.add('book-element');
@@ -29,7 +34,7 @@ function createRequestElement(bookRequest) {
 
   const viewRequestText = document.createElement('div');
   viewRequestText.classList.add('view-request-er-link')
-  viewRequestText.innerText = `View request by ${bookRequest.requester.email}`;
+  viewRequestText.innerText = `View request by ${bookRequest.requester.userName}`;
 
   const container = document.createElement('div');
   container.classList.add('book-request');
@@ -41,21 +46,7 @@ function createRequestElement(bookRequest) {
   requestElement.href = `/view-request/${bookRequest.bookRequestKey}`;
   requestElement.classList.add('request-link');
   requestElement.appendChild(container);
-  //return requestElement;
-
-  const requestDeleteButtonElement = document.createElement('BUTTON');
-  requestDeleteButtonElement.innerHTML = "Delete Request";
-
-  const requestDeleteElement = document.createElement('a');
-  requestDeleteElement.href = `/delete-request/${bookRequest.bookRequestKey}`;
-  requestDeleteElement.classList.add('request-link');
-  requestDeleteElement.appendChild(requestDeleteButtonElement)
-
-  const requestContainer = document.createElement('div');
-  requestContainer.appendChild(requestElement);
-  requestContainer.appendChild(requestDeleteElement);
-
-  return requestContainer;
+  return requestElement;
 }
 
 async function getLoginStatus() {
@@ -96,6 +87,141 @@ async function getRequest(){
     return;
   }
   const bookRequest = await response.json();
-  const contentElement = document.getElementById("content");
-  contentElement.appendChild(createRequestElement(bookRequest));
+  
+  const authResponse = await fetch('/login-status');
+  const authInfo = await authResponse.json();
+
+  const bookAuthor = bookRequest.book.author;
+  const hasAuthor = !isStringEmpty(bookAuthor);
+  const requesterEmail = bookRequest.requester.email;
+  const requesterName = bookRequest.requester.userName;
+  const bookTitle = bookRequest.book.title;
+
+  const headerElement = document.getElementById('header');
+  const ctaElement = document.getElementById('cta-link');
+  const emailLink = `mailto:${requesterEmail}?Subject=Hey%20${requesterName}!%20I%20can%20lend%20you%20"${bookTitle}"`;
+
+  if(authInfo.isUserLoggedIn){
+    const currentUserEmail = authInfo.currentUser.email;
+    const isUserRequestOwner = requesterEmail.localeCompare(currentUserEmail) == 0;
+    if(isUserRequestOwner) {
+      headerElement.innerHTML = `Your Request for <em>${bookTitle}</em> ${hasAuthor ? `by ${bookAuthor}` : ''}`;
+      
+      const statusElement = document.getElementById('request-status');
+      const isUnfulfilled = bookRequest.status.localeCompare("UNFULFILLED") === 0
+      statusElement.innerText = `${isUnfulfilled ? 'No' : 'Yes'}`;
+      const statusTitle = document.getElementById('book-title');
+      statusTitle.innerHTML = `<em>${bookTitle}</em>`;
+      const statusContainer = document.getElementById('request-status-container');
+      statusContainer.classList.remove('hide');
+
+      ctaElement.innerText = 'Update Request';
+      ctaElement.href = `/edit-request/${requestKey}`;
+
+      const deleteElement = document.getElementById('delete-link');
+      deleteElement.href = `/delete-request/${bookRequest.bookRequestKey}`;
+      deleteElement.classList.remove('hide');
+
+      const actionLinksElement = document.getElementById('action-links');
+      actionLinksElement.style.justifyContent = 'space-between';
+    } else {
+      headerElement.innerHTML = `Do you have <em>${bookTitle}</em> ${hasAuthor ? `by ${bookAuthor}` : ''}?`;   
+      ctaElement.innerText = `Email ${requesterName}`;
+      ctaElement.href = emailLink;
+    }
+  
+  } else {
+    headerElement.innerText = `Do you have ${bookRequest.book.title} ${hasAuthor ? `by ${bookAuthor}` : ''}?`;
+    ctaElement.innerText = `Email ${requesterName}`
+    ctaElement.href = emailLink;
+    
+  }
+
+  const userNameElement = document.getElementById('user-name-display');
+  userNameElement.innerText = `${bookRequest.requester.userName}`;
+
+  const titleElement = document.getElementById('title-display');
+  titleElement.innerText = `${bookRequest.book.title}`;
+  
+  
+  if(hasAuthor) {
+    const authorDisplay = document.getElementById('author-display');
+    authorDisplay.innerText = `${bookRequest.book.author}`;
+    const authorContainer = document.getElementById('author-container');
+    authorContainer.classList.remove('hide');
+  }
+
+  const hasIsbn = !isStringEmpty(bookRequest.book.isbn);
+  if(hasIsbn) {
+    const isbnDisplay = document.getElementById('isbn-display');
+    isbnDisplay.innerText = `${bookRequest.book.isbn}`;
+    const authorContainer = document.getElementById('isbn-container');
+    authorContainer.classList.remove('hide');
+  }
+
+  const dateElement = document.getElementById('date-display');
+  // assuming date is in format "yyyy-MM-dd"
+  const returnDateParts = bookRequest.returnDate.split('-');
+  const returnDate = new Date(returnDateParts[0], returnDateParts[1], returnDateParts[2]);
+  dateElement.innerText = `${returnDate.toDateString()}`;
+
+  const emailElement = document.getElementById('email');
+  emailElement.innerText = `${requesterEmail}`;
+  emailElement.href = emailLink
+}
+
+async function populateForm(){
+  const response = await fetch('/login-status');
+  const authInfo = await response.json();
+  const emailContainer = document.getElementById("email");
+  // should never be true as server redirects all logged out users to '/'
+  if(!authInfo.isUserLoggedIn) {
+    emailContainer.innerText = "INV@ALID.com";
+    return;
+  }
+  emailContainer.innerText = authInfo.currentUser.email;
+  const userName = authInfo.currentUser.userName;
+  if(!isStringEmpty(userName)){
+    userNameInput = document.getElementById('user-name-input');
+    userNameInput.value = userName;
+  }
+}
+
+async function populateEditForm(){
+  const path = window.location.pathname.split('/');
+  //request key should be last part of url
+  requestKey = path[path.length-1];
+  const response = await fetch(`/request/${requestKey}`);
+  if(response.status != 200){
+    window.location.replace("/request-not-found");
+    return;
+  }
+  const bookRequest = await response.json();
+
+  const userNameInput = document.getElementById('user-name-input');
+  userNameInput.value = bookRequest.requester.userName;
+  
+  const titleInput = document.getElementById('title-input');
+  titleInput.value = bookRequest.book.title;
+
+  const authorInput = document.getElementById('author-input');
+  authorInput.value = bookRequest.book.author;
+
+  const isbnInput = document.getElementById('isbn-input');
+  isbnInput.value = bookRequest.book.isbn;
+
+  const dateInput = document.getElementById('date-input');
+  dateInput.value = bookRequest.returnDate;
+
+  const emailDisplay = document.getElementById('email');
+  emailDisplay.innerText = bookRequest.requester.email;
+
+  const yesButton = document.getElementById('yes-button');
+  yesButton.checked = bookRequest.status === "FULFILLED";
+
+  const noButton = document.getElementById('no-button');
+  noButton.checked = bookRequest.status === "UNFULFILLED";
+
+  const formAction = document.getElementById('request-form');
+  formAction.action = `/edit-request/${requestKey}`
 }

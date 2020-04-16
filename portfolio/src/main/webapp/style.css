@@ -151,7 +151,10 @@ body {
   border: none;
   font-size: 0.9em;
   font-family: 'Dancing Script', cursive;
-  border-bottom: 3px solid #f1741b;
+  border-bottom: 3px solid #804f2d;
+}
+.required {
+  border-bottom: 3px solid  #f18d1b;
 }
 #request-form {
   display: flex;
@@ -168,7 +171,44 @@ body {
   color: white;
   margin: 2em 0 1em 0;
   font-size: 1.1em;
+  text-decoration: none;
 }
 .submit-request-form-button:hover {
   background-color: #ec9c40;
+}
+#view-request-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hide {
+  display: none;
+}
+.field-display {
+  color: #ec9c40;
+}
+#action-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50em;
+}
+#delete-link {
+  color: red;
+}
+#request-status-container {
+  border-radius: 6em;
+  padding: 1em;
+  box-shadow: 0 .25em .5em 0 rgba(0,0,0,0.2);
+  background-color: white;
+  font-size: 1.2em;
+  margin-top: 1em;
+}
+#request-status {
+  color: #804f2d;
+  margin-left: 1em;
+
+}
+#required-fields-text {
+  margin-top: 2em;
 }
