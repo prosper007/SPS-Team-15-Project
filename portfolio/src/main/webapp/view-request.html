@@ -22,6 +22,7 @@
         </span>
 		</nav>
 		<div id="content">
+      <!--contents are inserted dynamically from getRequest() in script.js -->
 			<div id="header-container">
 				<h1 id="header"></h1>
 			</div>
@@ -48,11 +49,15 @@
 							I will return it by the following date: <span id="date-display" class="field-display"></span>.
 							<br/>
 							<br/>
-                Please email me at <span id="email" class="field-display"></span> if you can lend me the book. Thank you!
+                Please email me at <a id="email" class="field-display"></a> if you can lend me the book. Thank you!
 						</div>
 					</div>
 				</div>
-			</div>
+        <div id="action-links">
+          <a id="cta-link" class="submit-request-form-button"></a>
+          <a id="delete-link" class="view-request-er-link hide">Delete Request</a>
+        </div>
+      </div>
 		</div>
 	</div>
 </body>

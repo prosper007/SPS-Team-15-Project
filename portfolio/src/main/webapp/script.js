@@ -46,21 +46,7 @@ function createRequestElement(bookRequest) {
   requestElement.href = `/view-request/${bookRequest.bookRequestKey}`;
   requestElement.classList.add('request-link');
   requestElement.appendChild(container);
-  //return requestElement;
-
-  const requestDeleteButtonElement = document.createElement('BUTTON');
-  requestDeleteButtonElement.innerHTML = "Delete Request";
-
-  const requestDeleteElement = document.createElement('a');
-  requestDeleteElement.href = `/delete-request/${bookRequest.bookRequestKey}`;
-  requestDeleteElement.classList.add('request-link');
-  requestDeleteElement.appendChild(requestDeleteButtonElement)
-
-  const requestContainer = document.createElement('div');
-  requestContainer.appendChild(requestElement);
-  requestContainer.appendChild(requestDeleteElement);
-
-  return requestContainer;
+  return requestElement;
 }
 
 async function getLoginStatus() {
@@ -104,20 +90,42 @@ async function getRequest(){
   
   const authResponse = await fetch('/login-status');
   const authInfo = await authResponse.json();
+
+  const bookAuthor = bookRequest.book.author;
+  const hasAuthor = !isStringEmpty(bookAuthor);
   const requesterEmail = bookRequest.requester.email;
-  const hasAuthor = !isStringEmpty(bookRequest.book.author);
+  const requesterName = bookRequest.requester.userName;
+  const bookTitle = bookRequest.book.title;
+
   const headerElement = document.getElementById('header');
+  const ctaElement = document.getElementById('cta-link');
+  const emailLink = `mailto:${requesterEmail}?Subject=Hey%20${requesterName}!%20I%20can%20lend%20you%20"${bookTitle}"`;
+
   if(authInfo.isUserLoggedIn){
     const currentUserEmail = authInfo.currentUser.email;
     const isUserRequestOwner = requesterEmail.localeCompare(currentUserEmail) == 0;
     if(isUserRequestOwner) {
-      headerElement.innerHTML = `Your request for <em>${bookRequest.book.title}</em> ${hasAuthor ? `by ${bookRequest.book.author}` : ''}`
+      headerElement.innerHTML = `Your request for <em>${bookTitle}</em> ${hasAuthor ? `by ${bookAuthor}` : ''}`;
+      ctaElement.innerText = 'Edit Request';
+      ctaElement.href = `/edit-request/${requestKey}`;
+
+      const deleteElement = document.getElementById('delete-link');
+      deleteElement.href = `/delete-request/${bookRequest.bookRequestKey}`;
+      deleteElement.classList.remove('hide');
+
+      const actionLinksElement = document.getElementById('action-links');
+      actionLinksElement.style.justifyContent = 'space-between';
     } else {
-      headerElement.innerHTML = `Do you have <em>${bookRequest.book.title}</em> ${hasAuthor ? `by ${bookRequest.book.author}` : ''}?`
+      headerElement.innerHTML = `Do you have <em>${bookTitle}</em> ${hasAuthor ? `by ${bookAuthor}` : ''}?`;   
+      ctaElement.innerText = `Email ${requesterName}`;
+      ctaElement.href = emailLink;
     }
   
   } else {
-    headerElement.innerText = `Do you have ${bookRequest.book.title} ${hasAuthor ? `by ${bookRequest.book.author}` : ''}?`
+    headerElement.innerText = `Do you have ${bookRequest.book.title} ${hasAuthor ? `by ${bookAuthor}` : ''}?`;
+    ctaElement.innerText = `Email ${requesterName}`
+    ctaElement.href = emailLink;
+    
   }
 
   const userNameElement = document.getElementById('user-name-display');
@@ -147,6 +155,7 @@ async function getRequest(){
 
   const emailElement = document.getElementById('email');
   emailElement.innerText = `${requesterEmail}`;
+  emailElement.href = emailLink
 }
 
 async function populateForm(){

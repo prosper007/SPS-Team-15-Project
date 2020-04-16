@@ -171,17 +171,28 @@ body {
   color: white;
   margin: 2em 0 1em 0;
   font-size: 1.1em;
+  text-decoration: none;
 }
 .submit-request-form-button:hover {
   background-color: #ec9c40;
 }
 #view-request-content {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 .hide {
   display: none;
 }
 .field-display {
   color: #ec9c40;
+}
+#action-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50em;
+}
+#delete-link {
+  color: red;
 }
