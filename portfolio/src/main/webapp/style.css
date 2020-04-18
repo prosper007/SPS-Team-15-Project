@@ -209,6 +209,12 @@ body {
   margin-left: 1em;
 
 }
-#required-fields-text {
-  margin-top: 2em;
+.handwriting-font {
+  font-family: 'Dancing Script', cursive;
+}
+.error {
+  border-bottom: 3px solid  red;
+}
+.display-error {
+  color: red;
 }

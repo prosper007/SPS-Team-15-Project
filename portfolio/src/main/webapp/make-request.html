@@ -23,7 +23,7 @@
         <div id="header-container">
           <h1 id="header">Request a Book</h1>
         </div>
-        <form action="/make-request" method="POST" id="request-form">
+        <form action="/make-request" method="POST" id="request-form" onsubmit="submitForm(event)">
           <div id="request-form-container">
             <div id="pattern">
               <div id="line-content">
@@ -32,7 +32,7 @@
                 Hello! 
                 <br/>
                 <br/>
-                My name's
+                <span id="name-label">My name's</span>
                 <input
                   id="user-name-input" 
                   class="request-field required" 
@@ -40,7 +40,7 @@
                   name="userName"
                   placeholder="Shrek"
                 />.
-                I would like to borrow a book titled "
+                I would like to borrow <span id="title-label">a book titled</span> "
                 <input
                   id="title-input" 
                   class="request-field required" 
@@ -64,7 +64,7 @@
                   name="isbn"
                   placeholder="9781566199094" 
                 />.
-                I will return it by the following date: 
+                I will <span id="date-label">return it by the following date</span>: 
                 <input
                   id="date-input" 
                   class="request-field required" 
@@ -77,9 +77,11 @@
               </div>
             </div>
           </div>
-          <div id="required-fields-text">
-            <span class="required">Your name</span>, the <span class="required">book title</span> and your intended
-            <span class="required">return date</span> are required fields.
+          <div id="request-status-container">
+            <div id="required-fields-text">
+              Your <span class="required handwriting-font">name</span>, the <span class="required handwriting-font">book title</span> and your intended
+              <span class="required handwriting-font">return date</span> are required fields.
+            </div>
           </div>
           <input 
             class="submit-request-form-button"
