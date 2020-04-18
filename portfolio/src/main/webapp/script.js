@@ -226,3 +226,98 @@ async function populateEditForm(){
   const formAction = document.getElementById('request-form');
   formAction.action = `/edit-request/${requestKey}`
 }
+
+function constructErrorMessage(isUserNameInvalid, isTitleInvalid, isDateInvalid, numErrors) {
+  let errorMessage = 'Please enter ';
+  let tracker = 0;
+  if(isUserNameInvalid){
+    errorMessage += `your <span class="display-error">name</span>${numErrors>1 ? ', ' : ' '}`;
+    tracker++;
+    if(tracker == numErrors -1){
+      errorMessage += 'and ';
+    }
+  }
+  if(isTitleInvalid){
+    errorMessage += `the <span class="display-error">book title</span>${numErrors>1 ? ', ' : ' '}`;
+    tracker++;
+    if(tracker == numErrors -1){
+      errorMessage += 'and ';
+    }
+  }
+  
+  if(isDateInvalid){
+    errorMessage += 'your intended <span class="display-error">return date</span>';
+  }
+  return errorMessage;
+}
+
+function isFormValid() {
+  const userNameInput = document.getElementById('user-name-input');
+  const userName = userNameInput.value;
+  
+  const titleInput = document.getElementById('title-input');
+  const bookTitle = titleInput.value;
+
+  const dateInput = document.getElementById('date-input');
+  const returnDate = dateInput.value;
+  console.log(returnDate);
+
+  const isUserNameInvalid = isStringEmpty(userName);
+  const isTitleInvalid = isStringEmpty(bookTitle);
+  const isDateInvalid= isStringEmpty(returnDate);
+
+  const errorMessageContainer = document.getElementById("required-fields-text");
+  
+  if(isUserNameInvalid || isTitleInvalid || isDateInvalid) {
+    let numErrors = 0;
+
+    if(isUserNameInvalid){
+      userNameInput.classList.remove('required');
+      userNameInput.classList.add('error');
+      const nameLabel = document.getElementById('name-label');
+      nameLabel.classList.add('display-error');
+      numErrors++;
+    }
+
+    if(isTitleInvalid){
+      titleInput.classList.remove('required');
+      titleInput.classList.add('error');
+      const titleLabel = document.getElementById('title-label');
+      titleLabel.classList.add('display-error');
+      numErrors++;
+    }
+
+    if(isDateInvalid){
+      dateInput.classList.remove('required');
+      dateInput.classList.add('error');
+      const dateLabel = document.getElementById('date-label');
+      dateLabel.classList.add('display-error');
+      numErrors++;
+    }
+
+    const errorMessage = constructErrorMessage(isUserNameInvalid, isTitleInvalid, isDateInvalid, numErrors)
+    errorMessageContainer.innerText = '';
+    errorMessageContainer.innerHTML = errorMessage;
+    return false;
+  }
+  const returnDateObject = new Date(returnDate);
+  let now = new Date();
+  if(returnDateObject < now){
+    dateInput.classList.remove('required');
+    dateInput.classList.add('error');
+    const dateLabel = document.getElementById('date-label');
+    dateLabel.classList.add('display-error');
+    errorMessageContainer.innerHTML = 'Your intended <span class="display-error">return date cannot be in the past</span>';
+    return false;
+  }
+
+  return true;
+}
+
+function submitForm(event) {
+  if(isFormValid()){
+  } else{
+    event.preventDefault();
+    return false;
+  }
+}
